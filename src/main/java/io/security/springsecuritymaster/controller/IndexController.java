@@ -1,25 +1,36 @@
 package io.security.springsecuritymaster.controller;
 
+import io.security.springsecuritymaster.security.SecurityContextService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
+
 public class IndexController {
     
+    private final SecurityContextService securityContextService;
+    
+    @Autowired
+    public IndexController(SecurityContextService securityContextService) {
+        this.securityContextService = securityContextService;
+    }
+    
     @GetMapping("/")
-    public String index(@RequestParam(value = "customParam") String customParam) {
-        if (customParam != null) {
-            return "customPage";
-        } else {
-            return "index";
-        }
+    public String index() {
+        SecurityContext context = SecurityContextHolder.getContextHolderStrategy().getContext();
+        Authentication authentication = context.getAuthentication();
+        System.out.println("authentication = " + authentication);
         
+        securityContextService.securityContext(); // 전역적 으로 참조 가능
+        return "index";
     }
     
     @GetMapping("/home")
