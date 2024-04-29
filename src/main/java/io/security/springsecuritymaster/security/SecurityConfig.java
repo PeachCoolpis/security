@@ -30,7 +30,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         
         HttpSessionRequestCache requestCache = new HttpSessionRequestCache();
-        
+        requestCache.setMatchingRequestParameterName("customParam=y");
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/logoutSuccess").permitAll()
@@ -38,9 +38,12 @@ public class SecurityConfig {
                         .authenticated())
                 .formLogin(form -> form
                         .successHandler((request, response, authentication) -> {
-                            response.sendRedirect(requestCache.getRequest(request,response).getRedirectUrl());
+                            SavedRequest savedRequest = requestCache.getRequest(request, response);
+                            String redirectUrl = savedRequest.getRedirectUrl();
+                            response.sendRedirect(redirectUrl);
                         })
                 )
+                .requestCache(cache -> cache.requestCache(requestCache))
                 
         ;
         return http.build();
