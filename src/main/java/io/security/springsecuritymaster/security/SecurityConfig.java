@@ -24,21 +24,7 @@ public class SecurityConfig {
     
     
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http
-            , AuthenticationManagerBuilder builder
-            , AuthenticationConfiguration configuration) throws Exception {
-        
-        AuthenticationManagerBuilder managerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
-        managerBuilder.authenticationProvider(coustomAuthenticationProvider());
-        
-        ProviderManager authenticationManager = (ProviderManager) configuration.getAuthenticationManager();
-        authenticationManager.getProviders().remove(0); // parant에 있는것 삭제
-        builder.authenticationProvider(new DaoAuthenticationProvider());
-        
-        //AuthenticationManagerBuilder managerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
-        //managerBuilder.authenticationProvider(new CustomAuthenticationProvider());
-        //managerBuilder.authenticationProvider(new CustomAuthenticationProvider2()); 아래에 있는 http.authenticationProvider 에 추가해도 동일
-        
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         
         http
                 .authorizeHttpRequests(auth -> auth
@@ -46,8 +32,8 @@ public class SecurityConfig {
                         .anyRequest()
                         .authenticated())
                 .formLogin(Customizer.withDefaults())
-//                .authenticationProvider(new CustomAuthenticationProvider())
-//                .authenticationProvider(new CustomAuthenticationProvider2())
+                .authenticationProvider(customAuthenticationProvider())
+                .authenticationProvider(customAuthenticationProvider2())
                 
                 
         
@@ -57,8 +43,12 @@ public class SecurityConfig {
     }
     
     @Bean
-    public AuthenticationProvider coustomAuthenticationProvider() {
+    public AuthenticationProvider customAuthenticationProvider() {
         return new CustomAuthenticationProvider();
+    }
+    @Bean
+    public AuthenticationProvider customAuthenticationProvider2() {
+        return new CustomAuthenticationProvider2();
     }
     
     @Bean
