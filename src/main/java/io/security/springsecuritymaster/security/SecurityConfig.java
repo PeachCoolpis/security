@@ -32,12 +32,9 @@ public class SecurityConfig {
                         .anyRequest()
                         .authenticated())
                 .formLogin(Customizer.withDefaults())
-                .sessionManagement(session -> session
-                        .invalidSessionUrl("/invalidSessionUrl")
-                        .maximumSessions(1)
-                        .maxSessionsPreventsLogin(false) // 기존 사용자의 세션을 만료 시키는 정책
-                        .expiredUrl("/expiredUrl")
-                )
+//                .sessionManagement(session -> session
+//                        .sessionFixation(sessionFix -> sessionFix.changeSessionId()) // 이 설정 자체가 없더라도 시큐리티는 이 설정자체를 해준다.
+//                )
         
         
         ;
