@@ -29,7 +29,7 @@ public class LoginController {
         
         Authentication authenticate = authenticationManager.authenticate(token);
         SecurityContext securityContext = SecurityContextHolder.getContextHolderStrategy().createEmptyContext();
-         securityContext.setAuthentication(authenticate);
+        securityContext.setAuthentication(authenticate);
         SecurityContextHolder.getContextHolderStrategy().setContext(securityContext);
         httpSessionSecurityContextRepository.saveContext(securityContext,request,response);
         

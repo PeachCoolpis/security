@@ -65,4 +65,12 @@ public class IndexController {
     public String logoutSuccess() {
         return "logoutSuccess";
     }
+    @GetMapping("/expiredUrl")
+    public String expiredUrl() {
+        return "expiredUrl";
+    }
+    @GetMapping("/invalidSessionUrl")
+    public String invalidSessionUrl() {
+        return "invalidSessionUrl";
+    }
 }

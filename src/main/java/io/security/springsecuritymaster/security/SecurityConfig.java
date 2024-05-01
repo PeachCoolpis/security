@@ -31,8 +31,13 @@ public class SecurityConfig {
                         .requestMatchers("/login").permitAll()
                         .anyRequest()
                         .authenticated())
-                //.formLogin(Customizer.withDefaults())
-                .csrf(AbstractHttpConfigurer::disable)
+                .formLogin(Customizer.withDefaults())
+                .sessionManagement(session -> session
+                        .invalidSessionUrl("/invalidSessionUrl")
+                        .maximumSessions(1)
+                        .maxSessionsPreventsLogin(false) // 기존 사용자의 세션을 만료 시키는 정책
+                        .expiredUrl("/expiredUrl")
+                )
         
         
         ;
