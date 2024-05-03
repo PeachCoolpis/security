@@ -1,6 +1,8 @@
 package io.security.springsecuritymaster.controller;
 
 import io.security.springsecuritymaster.security.SecurityContextService;
+import io.security.springsecuritymaster.security.SessionInfoService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -13,15 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
-
+@RequiredArgsConstructor
 public class IndexController {
     
-    private final SecurityContextService securityContextService;
-    
-    @Autowired
-    public IndexController(SecurityContextService securityContextService) {
-        this.securityContextService = securityContextService;
-    }
+    private final SessionInfoService sessionInfoService;
     
     @GetMapping("/")
     public String index() {
@@ -29,8 +26,13 @@ public class IndexController {
         Authentication authentication = context.getAuthentication();
         System.out.println("authentication = " + authentication);
         
-        securityContextService.securityContext(); // 전역적 으로 참조 가능
         return "index";
+    }
+    
+    @GetMapping("/sessionInfo")
+    public String sessionInfo() {
+        sessionInfoService.sessionInfo();
+        return "sessionInfo";
     }
     
     @GetMapping("/home")
