@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -32,9 +33,9 @@ public class SecurityConfig {
                         .anyRequest()
                         .authenticated())
                 .formLogin(Customizer.withDefaults())
-//                .sessionManagement(session -> session
-//                        .sessionFixation(sessionFix -> sessionFix.changeSessionId()) // 이 설정 자체가 없더라도 시큐리티는 이 설정자체를 해준다.
-//                )
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
         
         
         ;
