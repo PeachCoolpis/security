@@ -18,95 +18,44 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class IndexController {
     
-    
-    @GetMapping("/")
-    public Authentication index() {
-        SecurityContext context = SecurityContextHolder.getContextHolderStrategy().getContext();
-        return context.getAuthentication();
+    @GetMapping("/user")
+    public String user(){
+        return "user";
     }
     
-    
-    @GetMapping("/home")
-    public String home() {
-        return "home";
+    @GetMapping("/myPage/points")
+    public String myPage(){
+        return "myPage";
     }
     
-    
-    @GetMapping("/loginPage")
-    public String loginPage() {
-        return "loginPage";
+    @GetMapping("/manager")
+    public String manager(){
+        return "manager";
     }
     
-    @GetMapping("/anonymous")
-    public String anonymous() {
-        return "anonymous";
+    @GetMapping("/admin")
+    public String admin(){
+        return "admin";
     }
     
-    @GetMapping("/anonymousContext")
-    public String anonymousContext(@CurrentSecurityContext SecurityContext context) {
-        return context.getAuthentication().getName();
+    @GetMapping("/admin/payment")
+    public String adminPayment(){
+        return "adminPayment";
     }
     
-    @GetMapping("/authentication")
-    public String authentication(Authentication authentication) {
-        if (authentication instanceof AnonymousAuthenticationToken) {
-            return "anonymous";
-        }
-        return "null";
+    @GetMapping("/resource/address_01")
+    public String address_01(){
+        return "address_01";
     }
     
-    @GetMapping("/logoutSuccess")
-    public String logoutSuccess() {
-        return "logoutSuccess";
+    @GetMapping("/resource/address01")
+    public String address01(){
+        return "address01";
     }
     
-    @GetMapping("/expiredUrl")
-    public String expiredUrl() {
-        return "expiredUrl";
-    }
-    
-    @GetMapping("/invalidSessionUrl")
-    public String invalidSessionUrl() {
-        return "invalidSessionUrl";
-    }
-    
-    @GetMapping("/login")
-    public String login() {
-        return "loginPage";
-    }
-    
-    @GetMapping("/denied")
-    public String denied() {
-        return "denied";
-    }
-    
-    @PostMapping("/csrf")
-    public String csrf() {
-        return "csrf 적용됨";
-    }
-    
-    @PostMapping("/ignoreCsrf")
-    public String ignoreCsrf() {
-        return "ignoreCsrf";
-    }
-    
-    @GetMapping("/csrfToken")
-    public String csrfToken(HttpServletRequest request) {
-        CsrfToken csrfToken1 = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
-        CsrfToken csrfToken2 = (CsrfToken) request.getAttribute("_csrf");
-        String token1 = csrfToken1.getToken();
-        String token2 = csrfToken2.getToken();
-        return token1;
-    }
-    
-    @PostMapping("/formCsrf")
-    public CsrfToken formCsrf(CsrfToken csrfToken) {
-        return csrfToken;
-    }
-    
-    @PostMapping("/cookieCsrf")
-    public CsrfToken cookieCsrf(CsrfToken csrfToken) {
-        return csrfToken;
+    @PostMapping("/post")
+    public String post(){
+        return "post";
     }
 }
 
