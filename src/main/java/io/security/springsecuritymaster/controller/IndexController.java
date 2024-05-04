@@ -1,16 +1,12 @@
 package io.security.springsecuritymaster.controller;
 
-import io.security.springsecuritymaster.security.SecurityContextService;
-import io.security.springsecuritymaster.security.SessionInfoService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 
@@ -18,27 +14,20 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class IndexController {
     
-    private final SessionInfoService sessionInfoService;
+  
     
     @GetMapping("/")
-    public String index() {
+    public Authentication index() {
         SecurityContext context = SecurityContextHolder.getContextHolderStrategy().getContext();
-        Authentication authentication = context.getAuthentication();
-        System.out.println("authentication = " + authentication);
-        
-        return "index";
+        return context.getAuthentication();
     }
     
-    @GetMapping("/sessionInfo")
-    public String sessionInfo() {
-        sessionInfoService.sessionInfo();
-        return "sessionInfo";
-    }
     
     @GetMapping("/home")
     public String home() {
         return "home";
     }
+    
     
     @GetMapping("/loginPage")
     public String loginPage() {
@@ -75,4 +64,15 @@ public class IndexController {
     public String invalidSessionUrl() {
         return "invalidSessionUrl";
     }
+    @GetMapping("/login")
+    public String login() {
+        return "loginPage";
+    }
+    
+    @GetMapping("/denied")
+    public String denied() {
+        return "denied";
+    }
+    
 }
+
