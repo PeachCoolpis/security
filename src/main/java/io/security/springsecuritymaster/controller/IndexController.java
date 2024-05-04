@@ -1,11 +1,13 @@
 package io.security.springsecuritymaster.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class IndexController {
     
-  
     
     @GetMapping("/")
     public Authentication index() {
@@ -57,14 +58,17 @@ public class IndexController {
     public String logoutSuccess() {
         return "logoutSuccess";
     }
+    
     @GetMapping("/expiredUrl")
     public String expiredUrl() {
         return "expiredUrl";
     }
+    
     @GetMapping("/invalidSessionUrl")
     public String invalidSessionUrl() {
         return "invalidSessionUrl";
     }
+    
     @GetMapping("/login")
     public String login() {
         return "loginPage";
@@ -85,5 +89,13 @@ public class IndexController {
         return "ignoreCsrf";
     }
     
+    @GetMapping("/csrfToken")
+    public String csrfToken(HttpServletRequest request) {
+        CsrfToken csrfToken1 = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
+        CsrfToken csrfToken2 = (CsrfToken) request.getAttribute("_csrf");
+        String token1 = csrfToken1.getToken();
+        String token2 = csrfToken2.getToken();
+        return token1;
+    }
 }
 

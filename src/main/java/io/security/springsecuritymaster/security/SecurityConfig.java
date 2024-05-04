@@ -4,6 +4,7 @@ package io.security.springsecuritymaster.security;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.AccessDeniedException;
@@ -26,6 +27,9 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
+import org.springframework.security.web.csrf.XorCsrfTokenRequestAttributeHandler;
 
 import java.io.IOException;
 
@@ -37,13 +41,20 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         
-        
+        CookieCsrfTokenRepository csrfTokenRepository = new CookieCsrfTokenRepository();
+        HttpSessionCsrfTokenRepository httpSessionCsrfTokenRepository = new HttpSessionCsrfTokenRepository();
+        XorCsrfTokenRequestAttributeHandler csrfTokenRequestAttributeHandler = new XorCsrfTokenRequestAttributeHandler();
+        csrfTokenRequestAttributeHandler.setCsrfRequestAttributeName(null); // 기본적으로 지연로딩을 사용하지만 null 값을 할당하면 지연로딩을 사용하지 않는다.
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/csrf").permitAll()
+                        .requestMatchers("/csrf", "/csrfToken").permitAll()
                         .anyRequest().authenticated())
                 .formLogin(Customizer.withDefaults())
-                .csrf(csrf -> csrf.ignoringRequestMatchers("/csrf"))
+                .csrf(csrf -> csrf
+                                .csrfTokenRepository(httpSessionCsrfTokenRepository)
+                                .csrfTokenRequestHandler(csrfTokenRequestAttributeHandler)
+                        //.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                )
         ;
         return http.build();
     }
@@ -62,14 +73,6 @@ public class SecurityConfig {
     
     @Bean
     public UserDetailsService userDetailsService() {
-//        UserDetails user1 = User.withUsername("user")
-//                .password("{noop}1234")
-//                .roles("USER")
-//                .build();
-//        UserDetails user2 = User.withUsername("user")
-//                .password("{noop}1234")
-//                .roles("USER")
-//                .build();
         UserDetails user1 = User.withUsername("user")
                 .password("{noop}1234")
                 .roles("USER")
