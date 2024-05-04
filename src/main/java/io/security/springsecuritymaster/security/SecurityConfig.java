@@ -1,6 +1,8 @@
 package io.security.springsecuritymaster.security;
 
 
+import io.security.springsecuritymaster.controller.CsrfCookieFilter;
+import io.security.springsecuritymaster.controller.SpaCsrfTokenRequestHandler;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -27,7 +29,9 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.security.web.csrf.XorCsrfTokenRequestAttributeHandler;
 
@@ -41,24 +45,38 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         
-        CookieCsrfTokenRepository csrfTokenRepository = new CookieCsrfTokenRepository();
-        HttpSessionCsrfTokenRepository httpSessionCsrfTokenRepository = new HttpSessionCsrfTokenRepository();
-        XorCsrfTokenRequestAttributeHandler csrfTokenRequestAttributeHandler = new XorCsrfTokenRequestAttributeHandler();
-        csrfTokenRequestAttributeHandler.setCsrfRequestAttributeName(null); // 기본적으로 지연로딩을 사용하지만 null 값을 할당하면 지연로딩을 사용하지 않는다.
+        SpaCsrfTokenRequestHandler spaCsrfTokenRequestHandler = new SpaCsrfTokenRequestHandler();
+        
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/csrf", "/csrfToken").permitAll()
+                        .requestMatchers("/csrf", "/csrfToken", "/cookie", "/cookieCsrf").permitAll()
                         .anyRequest().authenticated())
                 .formLogin(Customizer.withDefaults())
-                .csrf(csrf -> csrf
-                                .csrfTokenRepository(httpSessionCsrfTokenRepository)
-                                .csrfTokenRequestHandler(csrfTokenRequestAttributeHandler)
-                        //.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                .csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                        .csrfTokenRequestHandler(spaCsrfTokenRequestHandler)
                 )
+                .addFilterBefore(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
+        
+        
         ;
         return http.build();
     }
-    
+
+//    @Bean
+//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//
+//
+//        http
+//                .authorizeHttpRequests(auth -> auth
+//                        .requestMatchers("/csrf", "/csrfToken","/form","/formCsrf").permitAll()
+//                        .anyRequest().authenticated())
+//                .formLogin(Customizer.withDefaults())
+//
+//
+//        ;
+//        return http.build();
+//    }
+//
     
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
