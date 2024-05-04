@@ -40,23 +40,10 @@ public class SecurityConfig {
         
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login").permitAll()
-                        .requestMatchers("/admin").hasRole("ADMIN")
+                        .requestMatchers("/csrf").permitAll()
                         .anyRequest().authenticated())
                 .formLogin(Customizer.withDefaults())
-                .exceptionHandling(exception -> exception
-//                        .authenticationEntryPoint((request, response, authException) -> {
-//                            System.out.println(String.format("exception = %s", authException.getMessage()));
-//                            response.sendRedirect("/login");
-//                        })
-                        .accessDeniedHandler((request, response, accessDeniedException) -> {
-                            System.out.println(String.format("DeniedException = %s", accessDeniedException.getMessage()));
-                            response.sendRedirect("/denied");
-                        })
-                )
-        // authenticationEntryPoint 를 사용할때는 UsernamePasswordAuthenticationFilter 를 구현한 LoginUrlAuithenticationEntryPotin를 구현 하거나
-        // BasicAuthenticationFilter -> BasicAuthenticationEntryPotint를 구현
-        
+                .csrf(csrf -> csrf.ignoringRequestMatchers("/csrf"))
         ;
         return http.build();
     }
