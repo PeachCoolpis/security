@@ -14,6 +14,7 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.core.GrantedAuthorityDefaults;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -42,24 +43,17 @@ public class SecurityConfig {
         return http.build();
     }
     
-    
     @Bean
-    public RoleHierarchy roleHierarchy() {
-        RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
-        String role1 = "ROLE_ADMIN > ROLE_DB\n";
-        String role2 = "ROLE_DB > ROLE_USER\n";
-        String role3 = "ROLE_USER > ROLE_ANONYMOUS";
-        
-        String role = role1 + role2 + role3;
-        roleHierarchy.setHierarchy(role);
-        return roleHierarchy;
+    public GrantedAuthorityDefaults grantedAuthorityDefaults() {
+        return new GrantedAuthorityDefaults("MYPREFIX_"); // hasRole 했을때 자동으로 붙는 ROLE_을 대체한다.
     }
+    
     
     @Bean
     public UserDetailsService userDetailsService() {
         UserDetails user1 = User.withUsername("user")
                 .password("{noop}1234")
-                .roles("USER")
+                .authorities("MYPREFIX_USER") // GrantedAuthorityDefaults 을 정의해 주었을떄는 roles 대신 authorities를 사용하도록한다.
                 .build();
         
         UserDetails user2 = User.withUsername("db")
