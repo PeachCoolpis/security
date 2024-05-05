@@ -5,6 +5,7 @@ import io.security.springsecuritymaster.controller.CustomRequestMatcher;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
@@ -29,7 +30,7 @@ import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 public class SecurityConfig {
     
     
-//    @Bean
+    //    @Bean
 //    public SecurityFilterChain securityFilterChain(HttpSecurity http , HandlerMappingIntrospector introspector) throws Exception {
 //
 //
@@ -66,21 +67,30 @@ public class SecurityConfig {
 //    ;
 //    return http.build();
 //}
-@Bean
-public SecurityFilterChain securityFilterChain(HttpSecurity http , ApplicationContext context) throws Exception {
+    @Bean
+    @Order(1)
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, ApplicationContext context) throws Exception {
+        http
+                .authorizeHttpRequests(auth -> auth
+                        .anyRequest().authenticated())
+                .formLogin(Customizer.withDefaults())
+        
+        
+        ;
+        return http.build();
+    }
     
-
-    
-    http
-            .authorizeHttpRequests(auth -> auth
-                    .requestMatchers(new CustomRequestMatcher("/admin/**")).hasAnyAuthority("ROLE_ADMIN")
-                    .anyRequest().authenticated())
-            .formLogin(Customizer.withDefaults())
-    
-    
-    ;
-    return http.build();
-}
+    @Bean
+    @Order(0)
+    public SecurityFilterChain securityFilterChain2(HttpSecurity http, ApplicationContext context) throws Exception {
+        http.securityMatchers(matcher -> matcher.requestMatchers("/api/**", "/oauth/**"))
+                .authorizeHttpRequests(auth -> auth
+                        .anyRequest().permitAll())
+        
+        
+        ;
+        return http.build();
+    }
     
     @Bean
     public UserDetailsService userDetailsService() {
@@ -96,9 +106,9 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http , ApplicationCo
         
         UserDetails user3 = User.withUsername("admin")
                 .password("{noop}1234")
-                .roles("ADMIN","WRITE")
+                .roles("ADMIN", "WRITE")
                 .build();
-        return new InMemoryUserDetailsManager(user1,user2,user3);
+        return new InMemoryUserDetailsManager(user1, user2, user3);
         
     }
 }
