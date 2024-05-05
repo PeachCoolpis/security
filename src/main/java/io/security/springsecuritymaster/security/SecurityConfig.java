@@ -28,7 +28,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .anyRequest().authenticated())
                 .formLogin(Customizer.withDefaults())
-        
+                .csrf(AbstractHttpConfigurer::disable)
         ;
         return http.build();
     }

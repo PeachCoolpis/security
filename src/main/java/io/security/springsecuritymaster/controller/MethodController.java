@@ -1,50 +1,49 @@
 package io.security.springsecuritymaster.controller;
 
 
-import org.springframework.security.access.prepost.PostAuthorize;
-import org.springframework.security.access.prepost.PreAuthorize;
+import io.security.springsecuritymaster.security.DataService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.nio.channels.Pipe;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @RestController
+@RequiredArgsConstructor
 public class MethodController {
     
-    @GetMapping("/admin")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public String admin() {
-        return "admin";
+    private final DataService dataService;
+    
+    @PostMapping("/writeList")
+    public List<Account> writeList(@RequestBody List<Account> account) {
+        return dataService.wirteList(account);
     }
     
-    @GetMapping("/user")
-    @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_ADMIN')")
-    public String user() {
-        return "user";
-    }
-    @GetMapping("/isAuthenticated")
-    @PreAuthorize("isAuthenticated()")
-    public String isAuthenticated() {
-        return "isAuthenticated";
-    }
-    @GetMapping("/user/{id}")
-    @PreAuthorize("#id == authentication.name")
-    public String authentication(@PathVariable(name = "id") String id){
-        return id;
+    @PostMapping("/writeMap")
+    public Map<String, Account> writeMap(@RequestBody List<Account> accounts) {
+        
+        Map<String, Account> collect = accounts.stream()
+                .collect(Collectors.toMap(
+                        Account::getOwner,
+                        account -> account
+                ));
+        
+        return dataService.wirteMap(collect);
     }
     
-    @GetMapping("/owner")
-    @PostAuthorize("returnObject.owner == authentication.name")
-    public Account owner(@RequestParam(value = "name") String name) {
-        return new Account(name, false);
+    @GetMapping("/readList")
+    public List<Account> readList() {
+        return dataService.readList();
     }
-    
-    @GetMapping("/isSecure")
-    @PostAuthorize("hasAuthority('ROLE_ADMIN') and  returnObject.secure == true ")
-    public Account isSecure(@RequestParam(name = "name") String name , @RequestParam(name = "secure") String secure) {
-        return new Account(name, "Y".equals(secure));
+    @GetMapping("/readMap")
+    public Map<String, Account> readMap() {
+        return dataService.readMap();
     }
-    
 }
