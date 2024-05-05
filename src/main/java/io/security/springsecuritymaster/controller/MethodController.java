@@ -1,49 +1,61 @@
 package io.security.springsecuritymaster.controller;
 
 
-import io.security.springsecuritymaster.security.DataService;
+import jakarta.annotation.security.DenyAll;
+import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
-
+/**
+ * 메서드 요청 권한 요청
+ */
 @RestController
 @RequiredArgsConstructor
 public class MethodController {
     
-    private final DataService dataService;
-    
-    @PostMapping("/writeList")
-    public List<Account> writeList(@RequestBody List<Account> account) {
-        return dataService.wirteList(account);
+    @GetMapping("/user")
+    @Secured("ROLE_USER")
+    public String user() {
+        return "user";
     }
     
-    @PostMapping("/writeMap")
-    public Map<String, Account> writeMap(@RequestBody List<Account> accounts) {
-        
-        Map<String, Account> collect = accounts.stream()
-                .collect(Collectors.toMap(
-                        Account::getOwner,
-                        account -> account
-                ));
-        
-        return dataService.wirteMap(collect);
+    @GetMapping("/admin")
+    @RolesAllowed("ADMIN")
+    public String admin() {
+        return "admin";
     }
     
-    @GetMapping("/readList")
-    public List<Account> readList() {
-        return dataService.readList();
+    @GetMapping("/permitAll")
+    @PermitAll
+    public String permitAll() {
+        return "permitAll";
     }
-    @GetMapping("/readMap")
-    public Map<String, Account> readMap() {
-        return dataService.readMap();
+    
+    @GetMapping("/denyAll")
+    @DenyAll
+    public String denyAll() {
+        return "denyAll";
+    }
+    
+    @GetMapping("/isAdmin")
+    @IsAdmin
+    public String isAdmin() {
+        return "isAdmin";
+    }
+    
+    @GetMapping("/ownerShip")
+    @OwnerShip
+    public Account ownerShip(@RequestParam(name = "name") String name) {
+        return new Account(name, false);
+    }
+    @GetMapping("/delete")
+    @PreAuthorize("@MyAuthorizer.isUser(#root)")
+    public String delete() {
+        return "delete";
     }
 }
