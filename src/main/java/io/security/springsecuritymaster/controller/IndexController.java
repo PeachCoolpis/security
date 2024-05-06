@@ -1,8 +1,10 @@
 package io.security.springsecuritymaster.controller;
 
+import io.security.springsecuritymaster.security.DataService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 
@@ -11,29 +13,20 @@ import org.springframework.web.bind.annotation.RestController;
 public class IndexController {
     
     
-    @GetMapping("/")
-    public String index() {
-        return "index";
-    }
+    private final DataService dataService;
     
     @GetMapping("/user")
-    public String user() {
-        return "user";
+    public String user(){
+        return dataService.getUser();
     }
     
-    @GetMapping("/db")
-    public String db() {
-        return "db";
+    @GetMapping("/owner")
+    public Account owner(@RequestParam(name = "name") String name){
+        return dataService.getOwner(name);
     }
-    
-    @GetMapping("/admin")
-    public String admin() {
-        return "admin";
-    }
-    
-    @GetMapping("/secure")
-    public String secure() {
-        return "secure";
+    @GetMapping("/display")
+    public String display(){
+        return dataService.display();
     }
 }
 

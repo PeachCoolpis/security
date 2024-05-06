@@ -37,7 +37,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @EnableWebSecurity
-@EnableMethodSecurity(securedEnabled = true, jsr250Enabled = true)
 @Configuration
 public class SecurityConfig {
     
@@ -48,7 +47,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().access(authorizationManager(null)))
+                        .anyRequest().authenticated())
                         .formLogin(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
         ;
@@ -56,35 +55,13 @@ public class SecurityConfig {
         return http.build();
     }
     
-    @Bean
-    public AuthorizationManager<RequestAuthorizationContext> authorizationManager(HandlerMappingIntrospector introspector) {
-        List<RequestMatcherEntry<AuthorizationManager<RequestAuthorizationContext>>> mappings = new ArrayList<>();
-        
-        RequestMatcherEntry<AuthorizationManager<RequestAuthorizationContext>> requestMatcherEntry1 =
-                new RequestMatcherEntry<>(new MvcRequestMatcher(introspector,"/user"),AuthorityAuthorizationManager.hasAuthority("ROLE_USER"));
-        
-        RequestMatcherEntry<AuthorizationManager<RequestAuthorizationContext>> requestMatcherEntry2 =
-                new RequestMatcherEntry<>(new MvcRequestMatcher(introspector,"/db"),AuthorityAuthorizationManager.hasAuthority("ROLE_DB"));
-        
-        RequestMatcherEntry<AuthorizationManager<RequestAuthorizationContext>> requestMatcherEntry3 =
-                new RequestMatcherEntry<>(new MvcRequestMatcher(introspector,"/admin"),AuthorityAuthorizationManager.hasAuthority("ROLE_ADMIN"));
-        
-        RequestMatcherEntry<AuthorizationManager<RequestAuthorizationContext>> requestMatcherEntry4 =
-                new RequestMatcherEntry<>(AnyRequestMatcher.INSTANCE,new AuthenticatedAuthorizationManager<>());
-        
-        mappings.add(requestMatcherEntry1);
-        mappings.add(requestMatcherEntry2);
-        mappings.add(requestMatcherEntry3);
-        mappings.add(requestMatcherEntry4);
-        return new CustomRequestMatcherDelegatingAuthorizationManager(mappings);
-    }
     
     
     @Bean
     public UserDetailsService userDetailsService() {
         UserDetails user1 = User.withUsername("user")
                 .password("{noop}1234")
-                .authorities("USER")
+                .roles("USER")
                 .build();
         
         UserDetails user2 = User.withUsername("db")
