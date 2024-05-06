@@ -20,6 +20,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.expression.WebExpressionAuthorizationManager;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @EnableWebSecurity
 @EnableMethodSecurity(securedEnabled = true, jsr250Enabled = true)
@@ -34,18 +38,15 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/user").hasRole("USER")
-                        .requestMatchers("/db").hasRole("DB")
-                        .requestMatchers("/admin").hasRole("ADMIN")
-                        .anyRequest().permitAll()) // 요청 기반 권한요청
+                        .requestMatchers("/db").access(new WebExpressionAuthorizationManager("hasRole('DB')"))
+                        .requestMatchers("/admin").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers("/secure").access(new CustomAuthorizationManager())
+                        .anyRequest().permitAll())
                 .formLogin(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
         ;
+        
         return http.build();
-    }
-    
-    @Bean
-    public GrantedAuthorityDefaults grantedAuthorityDefaults() {
-        return new GrantedAuthorityDefaults("MYPREFIX_"); // hasRole 했을때 자동으로 붙는 ROLE_을 대체한다.
     }
     
     
@@ -53,7 +54,7 @@ public class SecurityConfig {
     public UserDetailsService userDetailsService() {
         UserDetails user1 = User.withUsername("user")
                 .password("{noop}1234")
-                .authorities("MYPREFIX_USER") // GrantedAuthorityDefaults 을 정의해 주었을떄는 roles 대신 authorities를 사용하도록한다.
+                .authorities("USER")
                 .build();
         
         UserDetails user2 = User.withUsername("db")
