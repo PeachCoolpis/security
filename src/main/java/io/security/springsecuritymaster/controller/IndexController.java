@@ -14,42 +14,21 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 public class IndexController {
-    
-    private AuthenticationTrustResolver authenticationTrustResolver = new AuthenticationTrustResolverImpl();
-    
     @GetMapping("/")
-    public String index() {
-        Authentication authentication = SecurityContextHolder.getContextHolderStrategy().getContext().getAuthentication();
-        return authenticationTrustResolver.isAnonymous(authentication) ? "anonymous" : "authenticated";
+    public String index(){
+        return "index";
     }
     
     @GetMapping("/user")
-    public User user(@AuthenticationPrincipal User user) {
-        return user;
+    public String user(){
+        return "user";
     }
-    
-    
-    @GetMapping("/user2")
-    public String user(@AuthenticationPrincipal(expression = "username") String user) {
-        return user;
-    }
-    
-    @GetMapping("/currentUser")
-    public User currentUser(User user) {
-        return user;
-    }
-    @GetMapping("/currentUser2")
-    public String currentUsername(String user) {
-        return user;
-    }
-    
     @GetMapping("/db")
-    public String db() {
+    public String db(){
         return "db";
     }
-    
     @GetMapping("/admin")
-    public String admin() {
+    public String admin(){
         return "admin";
     }
 }
