@@ -1,8 +1,5 @@
 package io.security.springsecuritymaster.controller;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationTrustResolver;
 import org.springframework.security.authentication.AuthenticationTrustResolverImpl;
@@ -11,13 +8,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
 
 
 @RestController
@@ -44,11 +35,11 @@ public class IndexController {
     }
     
     @GetMapping("/currentUser")
-    public User currentUser(@CurrentUser User user) {
+    public User currentUser(User user) {
         return user;
     }
     @GetMapping("/currentUser2")
-    public String currentUsername(@CurrentUsername String user) {
+    public String currentUsername(String user) {
         return user;
     }
     

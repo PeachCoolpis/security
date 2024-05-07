@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authorization.AuthenticatedAuthorizationManager;
@@ -47,13 +48,21 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/user").hasAuthority("ROLE_USER")
-                        .requestMatchers("/db").hasAuthority("ROLE_DB")
-                        .requestMatchers("/admin").hasAuthority("ROLE_ADMIN")
-                        .anyRequest().permitAll())
-                       .formLogin(Customizer.withDefaults())
-                .csrf(AbstractHttpConfigurer::disable)
+                        .anyRequest().authenticated())
+             
         ;
+        
+        return http.build();
+    }
+    
+    
+    @Bean
+    @Order(1)
+    public SecurityFilterChain securityFilterChain2(HttpSecurity http) throws Exception {
+        http
+                .securityMatchers((matcher) -> matcher.requestMatchers("/api/**"))
+                .authorizeHttpRequests(auth -> auth
+                        .anyRequest().authenticated());
         
         return http.build();
     }
